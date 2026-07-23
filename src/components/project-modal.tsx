@@ -10,8 +10,8 @@ import type { Project } from "@/lib/types";
 import { Loader2, Hash } from "lucide-react";
 
 const COLORS = [
-  "#7c3aed", "#0ea5e9", "#10b981", "#f59e0b",
-  "#ef4444", "#ec4899", "#6366f1", "#14b8a6",
+  "#1e2a78", "#4b8ef5", "#5de2b7", "#ff5a5f",
+  "#f59e0b", "#6366f1", "#14b8a6", "#7b8496",
 ];
 
 const fieldCls =

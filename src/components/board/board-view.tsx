@@ -27,9 +27,9 @@ import {
 
 const statusAccent: Record<TicketStatus, string> = {
   todo: "bg-slate-400",
-  in_progress: "bg-sky-500",
+  in_progress: "bg-[#4b8ef5]",
   in_review: "bg-amber-500",
-  done: "bg-emerald-500",
+  done: "bg-[#5de2b7]",
 };
 
 export function BoardView({
@@ -189,7 +189,7 @@ export function BoardView({
                 onDrop={() => onDrop(s.value)}
                 className={cn(
                   "flex w-80 shrink-0 flex-col rounded-xl transition",
-                  overCol === s.value && "bg-violet-50 ring-2 ring-violet-200",
+                  overCol === s.value && "bg-primary-soft ring-2 ring-primary/20",
                 )}
               >
                 <div className="mb-3 flex items-center gap-2 px-1">
@@ -249,7 +249,7 @@ function ToggleBtn({
       className={cn(
         "flex h-8 w-8 items-center justify-center rounded-md transition",
         active
-          ? "bg-violet-100 text-primary"
+          ? "bg-primary-soft text-primary"
           : "text-slate-400 hover:text-slate-600",
       )}
     >

@@ -57,7 +57,7 @@ export function Sidebar({
           <button
             onClick={() => setCreateOpen(true)}
             title="เพิ่ม project"
-            className="flex h-5 w-5 items-center justify-center rounded-md text-slate-400 transition hover:bg-violet-50 hover:text-primary"
+            className="flex h-5 w-5 items-center justify-center rounded-md text-slate-400 transition hover:bg-primary-soft hover:text-primary"
           >
             <Plus size={15} />
           </button>
@@ -69,7 +69,7 @@ export function Sidebar({
           {projects.length === 0 && (
             <button
               onClick={() => setCreateOpen(true)}
-              className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-primary transition hover:bg-violet-50"
+              className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-primary transition hover:bg-primary-soft"
             >
               <Plus size={15} />
               เพิ่ม project แรก
@@ -159,7 +159,7 @@ function ProjectRow({
     <div
       className={cn(
         "group relative flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition",
-        active ? "bg-violet-50 text-primary" : "text-slate-600 hover:bg-slate-100",
+        active ? "bg-primary-soft text-primary" : "text-slate-600 hover:bg-slate-100",
         pending && "opacity-50",
       )}
     >
@@ -255,7 +255,7 @@ function NavItem({
       className={cn(
         "flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition",
         active
-          ? "bg-violet-50 text-primary"
+          ? "bg-primary-soft text-primary"
           : "text-slate-600 hover:bg-slate-100",
       )}
     >

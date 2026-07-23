@@ -32,7 +32,7 @@ create table if not exists public.projects (
   name        text not null,
   key         text not null unique,
   description text,
-  color       text not null default '#7c3aed',
+  color       text not null default '#1e2a78',
   created_by  uuid references public.profiles(id) on delete set null,
   created_at  timestamptz not null default now()
 );

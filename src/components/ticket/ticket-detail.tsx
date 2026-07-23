@@ -263,7 +263,7 @@ export function TicketDetail({
                 onClick={() => fileRef.current?.click()}
                 disabled={uploading}
                 className={cn(
-                  "flex aspect-square cursor-pointer flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-border text-slate-400 transition hover:border-violet-400 hover:text-violet-500",
+                  "flex aspect-square cursor-pointer flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-border text-slate-400 transition hover:border-primary hover:text-primary",
                   uploading && "pointer-events-none opacity-60",
                 )}
               >

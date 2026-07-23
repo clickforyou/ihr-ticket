@@ -31,7 +31,7 @@ export function AuthShell({
   return (
     <div className="flex min-h-screen">
       {/* Left: brand panel */}
-      <div className="relative hidden w-1/2 overflow-hidden bg-gradient-to-br from-violet-600 via-violet-700 to-indigo-800 lg:flex lg:flex-col lg:justify-between lg:p-12">
+      <div className="relative hidden w-1/2 overflow-hidden bg-gradient-to-br from-[#2a3a9e] via-[#1e2a78] to-[#141c54] lg:flex lg:flex-col lg:justify-between lg:p-12">
         <div className="flex items-center gap-2 text-white">
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/15 backdrop-blur">
             <Ticket size={20} />
@@ -42,11 +42,12 @@ export function AuthShell({
           <h2 className="max-w-sm text-3xl font-bold leading-tight">
             ติดตามงาน dev ทุก project ได้ในที่เดียว
           </h2>
-          <p className="mt-3 max-w-sm text-violet-100">
+          <p className="mt-3 max-w-sm text-indigo-100">
             จัดลำดับความสำคัญ แนบรูป มอบหมายงาน และดูความคืบหน้าแบบ Kanban
           </p>
         </div>
-        <div className="pointer-events-none absolute -bottom-24 -right-24 h-72 w-72 rounded-full bg-white/10 blur-2xl" />
+        <div className="pointer-events-none absolute -bottom-24 -right-24 h-72 w-72 rounded-full bg-[#ff5a5f]/25 blur-2xl" />
+        <div className="pointer-events-none absolute -top-16 -left-10 h-56 w-56 rounded-full bg-white/10 blur-2xl" />
       </div>
 
       {/* Right: form */}

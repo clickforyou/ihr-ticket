@@ -2,12 +2,12 @@ import { initials, cn } from "@/lib/utils";
 import type { Profile } from "@/lib/types";
 
 const palette = [
-  "bg-violet-500",
-  "bg-sky-500",
-  "bg-emerald-500",
+  "bg-[#1e2a78]", // Deep Indigo
+  "bg-[#4b8ef5]", // sky blue
+  "bg-[#5de2b7]", // Mint Glow
+  "bg-[#ff5a5f]", // AI Coral
   "bg-amber-500",
-  "bg-rose-500",
-  "bg-indigo-500",
+  "bg-[#6366f1]", // indigo
   "bg-teal-500",
 ];
 

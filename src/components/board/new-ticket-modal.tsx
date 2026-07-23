@@ -217,7 +217,7 @@ export function NewTicketModal({
                     }
                     className={
                       "rounded-full transition " +
-                      (on ? "ring-2 ring-offset-1 ring-violet-400" : "opacity-60 hover:opacity-100")
+                      (on ? "ring-2 ring-offset-1 ring-primary" : "opacity-60 hover:opacity-100")
                     }
                   >
                     <LabelChip label={l} />
@@ -254,7 +254,7 @@ export function NewTicketModal({
             <button
               type="button"
               onClick={() => fileRef.current?.click()}
-              className="flex h-16 w-16 cursor-pointer flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-border text-slate-400 transition hover:border-violet-400 hover:text-violet-500"
+              className="flex h-16 w-16 cursor-pointer flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-border text-slate-400 transition hover:border-primary hover:text-primary"
             >
               <ImagePlus size={18} />
               <span className="text-[10px]">เพิ่ม</span>

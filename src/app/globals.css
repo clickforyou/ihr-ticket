@@ -1,14 +1,20 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f6f7f9;
+  /* iHR HRIS 2030 "Future Friendly" palette */
+  --background: #fafbff; /* Warm White — main background */
   --surface: #ffffff;
-  --foreground: #0f172a;
-  --muted: #64748b;
-  --border: #e2e8f0;
-  --primary: #7c3aed;
+  --foreground: #1b2559; /* Deep Indigo-ish — headings/body */
+  --muted: #7b8496; /* Cool Gray — body text / UI lines */
+  --border: #e4e9f2;
+  --primary: #1e2a78; /* Deep Indigo — logo / primary / trust */
+  --primary-hover: #16205c;
   --primary-fg: #ffffff;
-  --ring: #a78bfa;
+  --primary-soft: #eaf6ff; /* Soft Sky — tints / active bg / cards */
+  --accent: #ff5a5f; /* AI Coral — accent / heart / CTA */
+  --accent-fg: #ffffff;
+  --success: #5de2b7; /* Mint Glow — success / friendly status */
+  --ring: #9aa5e0;
 }
 
 @theme inline {
@@ -18,7 +24,12 @@
   --color-muted: var(--muted);
   --color-border: var(--border);
   --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
   --color-primary-fg: var(--primary-fg);
+  --color-primary-soft: var(--primary-soft);
+  --color-accent: var(--accent);
+  --color-accent-fg: var(--accent-fg);
+  --color-success: var(--success);
   --color-ring: var(--ring);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
