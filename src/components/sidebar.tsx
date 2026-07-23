@@ -13,6 +13,7 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { ThemeToggle } from "@/components/theme-toggle";
 import {
   LayoutDashboard,
+  BarChart3,
   Ticket,
   LogOut,
   ChevronDown,
@@ -50,6 +51,13 @@ export function Sidebar({
       <nav className="flex-1 overflow-y-auto px-3 py-4">
         <NavItem href="/board" icon={LayoutDashboard} active={pathname === "/board"}>
           บอร์ดงาน
+        </NavItem>
+        <NavItem
+          href="/dashboard"
+          icon={BarChart3}
+          active={pathname === "/dashboard"}
+        >
+          แดชบอร์ด
         </NavItem>
 
         <div className="mt-6 mb-2 flex items-center justify-between px-3">
