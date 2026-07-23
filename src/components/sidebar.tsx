@@ -9,6 +9,7 @@ import { deleteProject } from "@/app/(app)/board/actions";
 import { cn } from "@/lib/utils";
 import type { Profile, Project } from "@/lib/types";
 import { ProjectModal } from "@/components/project-modal";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import {
   LayoutDashboard,
   Ticket,
@@ -139,21 +140,18 @@ function ProjectRow({
   const router = useRouter();
   const searchParams = useSearchParams();
   const [menu, setMenu] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const [pending, start] = useTransition();
   const active = searchParams.get("project") === project.id;
 
   function remove() {
-    setMenu(false);
-    if (
-      !confirm(
-        `ลบ project "${project.name}"?\nงาน (ticket) ทั้งหมดใน project นี้จะถูกลบด้วย ย้อนกลับไม่ได้`,
-      )
-    )
-      return;
-    start(async () => {
-      await deleteProject(project.id);
-      if (active) router.push("/board");
-      router.refresh();
+    return new Promise<void>((resolve) => {
+      start(async () => {
+        await deleteProject(project.id);
+        if (active) router.push("/board");
+        router.refresh();
+        resolve();
+      });
     });
   }
 
@@ -216,7 +214,8 @@ function ProjectRow({
             <button
               onClick={(e) => {
                 e.preventDefault();
-                remove();
+                setMenu(false);
+                setConfirmOpen(true);
               }}
               className="flex w-full items-center gap-2 px-3 py-1.5 text-sm text-red-600 transition hover:bg-red-50"
             >
@@ -226,6 +225,15 @@ function ProjectRow({
           </div>
         </>
       )}
+
+      <ConfirmDialog
+        open={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={remove}
+        title={`ลบ project "${project.name}"?`}
+        message="งาน (ticket) ทั้งหมดใน project นี้จะถูกลบด้วย รวมถึงคอมเมนต์และรูปแนบ — ย้อนกลับไม่ได้"
+        confirmText="ลบ project"
+      />
     </div>
   );
 }

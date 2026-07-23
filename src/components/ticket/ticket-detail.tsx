@@ -7,6 +7,7 @@ import { format } from "date-fns";
 import { Avatar } from "@/components/ui/avatar";
 import { LabelChip, PriorityBadge } from "@/components/ui/badges";
 import { Button } from "@/components/ui/button";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { publicUrl } from "@/lib/storage";
 import { updateTicket, deleteTicket, addComment } from "@/app/(app)/board/actions";
 import {
@@ -53,6 +54,7 @@ export function TicketDetail({
   const [editingDesc, setEditingDesc] = useState(false);
   const [comment, setComment] = useState("");
   const [posting, startPost] = useTransition();
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   const images = ticket.attachments?.filter((a) =>
     a.mime_type?.startsWith("image/"),
@@ -74,12 +76,9 @@ export function TicketDetail({
     if (desc !== (ticket.description ?? "")) patch({ description: desc || null });
   }
 
-  function remove() {
-    if (!confirm("ลบงานนี้ถาวร?")) return;
-    startTransition(async () => {
-      await deleteTicket(ticket.id);
-      router.push("/board");
-    });
+  async function remove() {
+    await deleteTicket(ticket.id);
+    router.push("/board");
   }
 
   function postComment() {
@@ -113,7 +112,7 @@ export function TicketDetail({
           </span>
         )}
         <button
-          onClick={remove}
+          onClick={() => setConfirmDelete(true)}
           className="ml-auto rounded-lg p-2 text-slate-400 transition hover:bg-red-50 hover:text-red-500"
           title="ลบงาน"
         >
@@ -388,6 +387,20 @@ export function TicketDetail({
           />
         </div>
       )}
+
+      <ConfirmDialog
+        open={confirmDelete}
+        onClose={() => setConfirmDelete(false)}
+        onConfirm={remove}
+        title="ลบงานนี้?"
+        message={
+          <>
+            งาน <span className="font-medium text-slate-700">{ticket.title}</span>{" "}
+            รวมถึงคอมเมนต์ รูปแนบ และประวัติทั้งหมดจะถูกลบถาวร ย้อนกลับไม่ได้
+          </>
+        }
+        confirmText="ลบงาน"
+      />
     </div>
   );
 }
