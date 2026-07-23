@@ -7,7 +7,15 @@ import { Avatar } from "@/components/ui/avatar";
 import { logout } from "@/app/login/actions";
 import { cn } from "@/lib/utils";
 import type { Profile, Project } from "@/lib/types";
-import { LayoutDashboard, Ticket, LogOut, ChevronDown, Hash } from "lucide-react";
+import { NewProjectModal } from "@/components/new-project-modal";
+import {
+  LayoutDashboard,
+  Ticket,
+  LogOut,
+  ChevronDown,
+  Hash,
+  Plus,
+} from "lucide-react";
 
 export function Sidebar({
   profile,
@@ -18,6 +26,7 @@ export function Sidebar({
 }) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [projectModal, setProjectModal] = useState(false);
 
   return (
     <aside className="flex w-64 shrink-0 flex-col border-r border-border bg-surface">
@@ -35,9 +44,18 @@ export function Sidebar({
           บอร์ดงาน
         </NavItem>
 
-        <p className="mt-6 mb-2 px-3 text-xs font-semibold uppercase tracking-wide text-slate-400">
-          Projects
-        </p>
+        <div className="mt-6 mb-2 flex items-center justify-between px-3">
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+            Projects
+          </p>
+          <button
+            onClick={() => setProjectModal(true)}
+            title="เพิ่ม project"
+            className="flex h-5 w-5 items-center justify-center rounded-md text-slate-400 transition hover:bg-violet-50 hover:text-primary"
+          >
+            <Plus size={15} />
+          </button>
+        </div>
         <div className="space-y-0.5">
           {projects.map((p) => (
             <Link
@@ -57,7 +75,13 @@ export function Sidebar({
             </Link>
           ))}
           {projects.length === 0 && (
-            <p className="px-3 py-2 text-sm text-slate-400">ยังไม่มี project</p>
+            <button
+              onClick={() => setProjectModal(true)}
+              className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-primary transition hover:bg-violet-50"
+            >
+              <Plus size={15} />
+              เพิ่ม project แรก
+            </button>
           )}
         </div>
       </nav>
@@ -96,6 +120,11 @@ export function Sidebar({
           />
         </button>
       </div>
+
+      <NewProjectModal
+        open={projectModal}
+        onClose={() => setProjectModal(false)}
+      />
     </aside>
   );
 }

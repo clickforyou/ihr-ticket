@@ -12,6 +12,45 @@ async function currentUserId() {
   return { supabase, userId: user?.id ?? null };
 }
 
+export async function createProject(input: {
+  name: string;
+  key: string;
+  description?: string;
+  color: string;
+}) {
+  const { supabase, userId } = await currentUserId();
+  if (!userId) return { error: "unauthorized" };
+
+  const name = input.name.trim();
+  const key = input.key.trim().toUpperCase();
+  if (!name) return { error: "กรุณาใส่ชื่อ project" };
+  if (!/^[A-Z0-9]{2,10}$/.test(key))
+    return { error: "รหัส (key) ต้องเป็น A-Z / 0-9 ยาว 2–10 ตัว" };
+
+  const { data, error } = await supabase
+    .from("projects")
+    .insert({
+      name,
+      key,
+      description: input.description?.trim() || null,
+      color: input.color,
+      created_by: userId,
+    })
+    .select("id")
+    .single();
+
+  if (error)
+    return {
+      error:
+        error.code === "23505"
+          ? `รหัส "${key}" ถูกใช้แล้ว ลองรหัสอื่น`
+          : error.message,
+    };
+
+  revalidatePath("/", "layout");
+  return { id: data.id };
+}
+
 export async function createTicket(input: {
   project_id: string;
   title: string;
