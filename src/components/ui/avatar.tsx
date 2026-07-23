@@ -36,7 +36,7 @@ export function Avatar({
         src={profile.avatar_url}
         alt={profile.full_name ?? ""}
         style={dim}
-        className={cn("rounded-full object-cover ring-2 ring-white", className)}
+        className={cn("rounded-full object-cover ring-2 ring-surface", className)}
       />
     );
   }
@@ -46,7 +46,7 @@ export function Avatar({
       style={dim}
       title={profile?.full_name ?? "Unassigned"}
       className={cn(
-        "inline-flex items-center justify-center rounded-full font-semibold text-white ring-2 ring-white select-none",
+        "inline-flex items-center justify-center rounded-full font-semibold text-white ring-2 ring-surface select-none",
         colorFor(profile?.id),
         className,
       )}

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AuthForm } from "@/components/auth-form";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { Ticket } from "lucide-react";
 
 export default function LoginPage() {
@@ -29,7 +30,8 @@ export function AuthShell({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen">
+    <div className="relative flex min-h-screen">
+      <ThemeToggle className="absolute right-4 top-4 z-10" />
       {/* Left: brand panel */}
       <div className="relative hidden w-1/2 overflow-hidden bg-gradient-to-br from-[#2a3a9e] via-[#1e2a78] to-[#141c54] lg:flex lg:flex-col lg:justify-between lg:p-12">
         <div className="flex items-center gap-2 text-white">

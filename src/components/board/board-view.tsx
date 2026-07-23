@@ -120,12 +120,12 @@ export function BoardView({
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="ค้นหางาน…"
-              className="h-9 w-48 rounded-lg border border-border bg-white pl-9 pr-3 text-sm outline-none transition focus:w-60 focus:border-primary focus:ring-2 focus:ring-ring/40"
+              className="h-9 w-48 rounded-lg border border-border bg-surface pl-9 pr-3 text-sm outline-none transition focus:w-60 focus:border-primary focus:ring-2 focus:ring-ring/40"
             />
           </div>
 
           {/* view toggle */}
-          <div className="flex rounded-lg border border-border bg-white p-0.5">
+          <div className="flex rounded-lg border border-border bg-surface p-0.5">
             <ToggleBtn active={view === "board"} onClick={() => setView("board")}>
               <LayoutGrid size={16} />
             </ToggleBtn>
@@ -274,7 +274,7 @@ function FilterSelect({
       value={value}
       onChange={(e) => onChange(e.target.value)}
       className={cn(
-        "h-8 rounded-lg border border-border bg-white px-2.5 text-xs outline-none transition focus:border-primary focus:ring-2 focus:ring-ring/40",
+        "h-8 rounded-lg border border-border bg-surface px-2.5 text-xs outline-none transition focus:border-primary focus:ring-2 focus:ring-ring/40",
         value ? "text-slate-700" : "text-slate-400",
       )}
     >

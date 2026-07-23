@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import type { Profile, Project } from "@/lib/types";
 import { ProjectModal } from "@/components/project-modal";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { ThemeToggle } from "@/components/theme-toggle";
 import {
   LayoutDashboard,
   Ticket,
@@ -42,6 +43,7 @@ export function Sidebar({
           <Ticket size={18} />
         </div>
         <span className="text-[15px] font-bold tracking-tight">iHR Ticket</span>
+        <ThemeToggle className="ml-auto" />
       </div>
 
       {/* Nav */}
@@ -81,7 +83,7 @@ export function Sidebar({
       {/* User */}
       <div className="relative border-t border-border p-3">
         {menuOpen && (
-          <div className="absolute bottom-full left-3 right-3 mb-2 animate-in rounded-lg border border-border bg-white p-1 shadow-lg">
+          <div className="absolute bottom-full left-3 right-3 mb-2 animate-in rounded-lg border border-border bg-surface p-1 shadow-lg">
             <form action={logout}>
               <button
                 type="submit"
@@ -185,7 +187,7 @@ function ProjectRow({
           e.preventDefault();
           setMenu((m) => !m);
         }}
-        className="hidden h-6 w-6 items-center justify-center rounded-md text-slate-400 transition hover:bg-white hover:text-slate-700 group-hover:flex"
+        className="hidden h-6 w-6 items-center justify-center rounded-md text-slate-400 transition hover:bg-surface hover:text-slate-700 group-hover:flex"
       >
         <MoreHorizontal size={15} />
       </button>
@@ -199,7 +201,7 @@ function ProjectRow({
               setMenu(false);
             }}
           />
-          <div className="absolute right-2 top-9 z-20 w-32 animate-in overflow-hidden rounded-lg border border-border bg-white py-1 shadow-lg">
+          <div className="absolute right-2 top-9 z-20 w-32 animate-in overflow-hidden rounded-lg border border-border bg-surface py-1 shadow-lg">
             <button
               onClick={(e) => {
                 e.preventDefault();

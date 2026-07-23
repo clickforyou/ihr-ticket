@@ -44,7 +44,7 @@ import {
 } from "lucide-react";
 
 const fieldCls =
-  "w-full rounded-lg border border-border bg-white px-3 py-2 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-ring/40";
+  "w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-ring/40";
 
 export function TicketDetail({
   ticket,
@@ -169,7 +169,7 @@ export function TicketDetail({
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             onBlur={saveTitle}
-            className="w-full rounded-lg border border-transparent bg-transparent px-2 py-1 text-2xl font-bold tracking-tight outline-none transition hover:bg-slate-50 focus:border-border focus:bg-white"
+            className="w-full rounded-lg border border-transparent bg-transparent px-2 py-1 text-2xl font-bold tracking-tight outline-none transition hover:bg-slate-50 focus:border-border focus:bg-surface"
           />
 
           {ticket.labels && ticket.labels.length > 0 && (
@@ -250,7 +250,7 @@ export function TicketDetail({
                   <button
                     onClick={() => removeImage(a.id, a.file_path)}
                     title="ลบรูป"
-                    className="absolute right-1 top-1 rounded-full bg-slate-900/60 p-1 text-white opacity-0 transition hover:bg-red-600 group-hover:opacity-100"
+                    className="absolute right-1 top-1 rounded-full bg-black/60 p-1 text-white opacity-0 transition hover:bg-red-600 group-hover:opacity-100"
                   >
                     <X size={13} />
                   </button>

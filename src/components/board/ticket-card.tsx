@@ -30,7 +30,7 @@ export function TicketCard({
       draggable
       onDragStart={onDragStart}
       className={cn(
-        "group block rounded-xl border border-border bg-white p-3 shadow-sm transition hover:border-primary/40 hover:shadow-md",
+        "group block rounded-xl border border-border bg-surface p-3 shadow-sm transition hover:border-primary/40 hover:shadow-md",
         dragging && "opacity-40",
       )}
     >

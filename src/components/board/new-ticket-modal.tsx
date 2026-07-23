@@ -19,7 +19,7 @@ import {
 import { ImagePlus, Loader2, X } from "lucide-react";
 
 const fieldCls =
-  "w-full rounded-lg border border-border bg-white px-3 py-2 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-ring/40";
+  "w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-ring/40";
 const labelCls = "mb-1.5 block text-xs font-semibold text-slate-600";
 
 export function NewTicketModal({
@@ -245,7 +245,7 @@ export function NewTicketModal({
                 />
                 <button
                   onClick={() => setFiles((fs) => fs.filter((_, x) => x !== i))}
-                  className="absolute right-0.5 top-0.5 rounded-full bg-slate-900/60 p-0.5 text-white"
+                  className="absolute right-0.5 top-0.5 rounded-full bg-black/60 p-0.5 text-white"
                 >
                   <X size={12} />
                 </button>

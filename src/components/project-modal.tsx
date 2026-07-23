@@ -15,7 +15,7 @@ const COLORS = [
 ];
 
 const fieldCls =
-  "w-full rounded-lg border border-border bg-white px-3 py-2 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-ring/40";
+  "w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-ring/40";
 const labelCls = "mb-1.5 block text-xs font-semibold text-slate-600";
 
 function suggestKey(name: string) {

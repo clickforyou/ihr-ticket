@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* class-based dark mode: <html class="dark"> */
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   /* iHR HRIS 2030 "Future Friendly" palette */
   --background: #fafbff; /* Warm White — main background */
@@ -36,6 +39,37 @@
   --radius: 0.75rem;
 }
 
+/* ---------- Dark mode ---------- */
+.dark {
+  /* semantic tokens */
+  --background: #0e1524; /* deep navy app bg */
+  --surface: #161e30; /* cards / inputs / menus */
+  --foreground: #e6ebf5;
+  --muted: #97a1b8; /* Cool Gray, lightened */
+  --border: #283349;
+  --primary: #6472e6; /* brighter indigo so it reads on dark */
+  --primary-hover: #7481ec;
+  --primary-fg: #ffffff;
+  --primary-soft: #232e52; /* dark indigo tint (active nav / hover) */
+  --accent: #ff6b70; /* AI Coral, a touch brighter */
+  --success: #5de2b7;
+  --ring: #6472e6;
+
+  /* remap the neutral slate scale so hardcoded slate-* utilities adapt.
+     (Tailwind v4 utilities reference var(--color-slate-*)) */
+  --color-slate-50: #1a2236;
+  --color-slate-100: #212b42;
+  --color-slate-200: #2b3752;
+  --color-slate-300: #3a4767;
+  --color-slate-400: #7581a0;
+  --color-slate-500: #93a0bd;
+  --color-slate-600: #b3bdd6;
+  --color-slate-700: #ccd4e6;
+  --color-slate-800: #e4e9f4;
+  --color-slate-900: #f2f5fb;
+  --color-slate-950: #f8fafc;
+}
+
 * {
   border-color: var(--border);
 }
@@ -56,14 +90,14 @@ body {
 /* Thin, modern scrollbars */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #cbd5e1 transparent;
+  scrollbar-color: var(--color-slate-300) transparent;
 }
 *::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 *::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: var(--color-slate-300);
   border-radius: 9999px;
 }
 *::-webkit-scrollbar-track {
