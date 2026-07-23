@@ -148,11 +148,21 @@ function ProjectRow({
   onEdit: () => void;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const [menu, setMenu] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [pending, start] = useTransition();
   const active = searchParams.get("project") === project.id;
+  const href = `/board?project=${project.id}`;
+
+  function select(e: React.MouseEvent) {
+    // อยู่หน้า board แล้ว → สลับ project แบบ client-side (ไม่ต้อง round-trip)
+    if (pathname === "/board" && !e.metaKey && !e.ctrlKey) {
+      e.preventDefault();
+      window.history.pushState(null, "", href);
+    }
+  }
 
   function remove() {
     return new Promise<void>((resolve) => {
@@ -174,7 +184,8 @@ function ProjectRow({
       )}
     >
       <Link
-        href={`/board?project=${project.id}`}
+        href={href}
+        onClick={select}
         className="flex min-w-0 flex-1 items-center gap-2.5"
       >
         <span

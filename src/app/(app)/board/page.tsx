@@ -8,10 +8,7 @@ type RawTicket = Omit<Ticket, "labels"> & {
   ticket_labels?: { label: Label | null }[];
 };
 
-export default async function BoardPage(props: {
-  searchParams: Promise<{ project?: string }>;
-}) {
-  const { project: projectFilter } = await props.searchParams;
+export default async function BoardPage() {
   const supabase = await createClient();
 
   const {
@@ -27,7 +24,7 @@ export default async function BoardPage(props: {
     supabase.from("labels").select("id, project_id, name, color"),
   ]);
 
-  let query = supabase
+  const query = supabase
     .from("tickets")
     .select(
       `id, project_id, title, description, status, priority, assignee_id, reporter_id, due_date, position, created_at, updated_at,
@@ -38,8 +35,8 @@ export default async function BoardPage(props: {
     .order("position", { ascending: true })
     .order("created_at", { ascending: false });
 
-  if (projectFilter) query = query.eq("project_id", projectFilter);
-
+  // ดึง ticket ครบทุก project ครั้งเดียว แล้วค่อยกรองตาม project ฝั่ง client
+  // (กดสลับ project จะไว ไม่ต้อง round-trip เซิร์ฟเวอร์ใหม่)
   const { data: rawTickets } = await query;
 
   const tickets: Ticket[] = ((rawTickets as unknown as RawTicket[]) ?? []).map(
@@ -57,7 +54,6 @@ export default async function BoardPage(props: {
       members={(membersRes.data as Profile[]) ?? []}
       labels={(labelsRes.data as Label[]) ?? []}
       initialTickets={tickets}
-      activeProject={projectFilter ?? null}
       currentUserId={user?.id ?? null}
     />
   );

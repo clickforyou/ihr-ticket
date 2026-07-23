@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { TicketCard } from "./ticket-card";
 import { NewTicketModal } from "./new-ticket-modal";
 import { ListView } from "./list-view";
@@ -39,17 +39,17 @@ export function BoardView({
   members,
   labels,
   initialTickets,
-  activeProject,
   currentUserId,
 }: {
   projects: Project[];
   members: Profile[];
   labels: Label[];
   initialTickets: Ticket[];
-  activeProject: string | null;
   currentUserId: string | null;
 }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const activeProject = searchParams.get("project");
   const [, startTransition] = useTransition();
   const [tickets, setTickets] = useState(initialTickets);
   const [view, setView] = useState<"board" | "list">("board");
@@ -70,6 +70,7 @@ export function BoardView({
     const q = search.trim().toLowerCase();
     const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
     return tickets.filter((t) => {
+      if (activeProject && t.project_id !== activeProject) return false;
       if (q && !t.title.toLowerCase().includes(q)) return false;
       if (priority && t.priority !== priority) return false;
       if (assignee && t.assignee_id !== assignee) return false;
@@ -78,7 +79,16 @@ export function BoardView({
         return false;
       return true;
     });
-  }, [tickets, search, priority, assignee, mine, overdue, currentUserId]);
+  }, [
+    tickets,
+    activeProject,
+    search,
+    priority,
+    assignee,
+    mine,
+    overdue,
+    currentUserId,
+  ]);
 
   const byStatus = (s: TicketStatus) => filtered.filter((t) => t.status === s);
 
