@@ -27,3 +27,9 @@ export async function uploadAttachment(file: File) {
     size: file.size,
   };
 }
+
+/** ลบไฟล์ออกจาก storage bucket */
+export async function removeAttachmentFile(path: string) {
+  const supabase = createClient();
+  await supabase.storage.from(ATTACHMENT_BUCKET).remove([path]);
+}

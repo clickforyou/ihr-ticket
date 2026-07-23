@@ -8,8 +8,18 @@ import { Avatar } from "@/components/ui/avatar";
 import { LabelChip, PriorityBadge } from "@/components/ui/badges";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
-import { publicUrl } from "@/lib/storage";
-import { updateTicket, deleteTicket, addComment } from "@/app/(app)/board/actions";
+import {
+  publicUrl,
+  uploadAttachment,
+  removeAttachmentFile,
+} from "@/lib/storage";
+import {
+  updateTicket,
+  deleteTicket,
+  addComment,
+  addAttachment,
+  deleteAttachment,
+} from "@/app/(app)/board/actions";
 import {
   STATUSES,
   PRIORITIES,
@@ -21,12 +31,14 @@ import {
   type TicketStatus,
   type TicketPriority,
 } from "@/lib/types";
+import { cn } from "@/lib/utils";
 import {
   ArrowLeft,
   Trash2,
   Send,
   Loader2,
   ImageIcon,
+  ImagePlus,
   X,
   Clock,
 } from "lucide-react";
@@ -55,6 +67,8 @@ export function TicketDetail({
   const [comment, setComment] = useState("");
   const [posting, startPost] = useTransition();
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   const images = ticket.attachments?.filter((a) =>
     a.mime_type?.startsWith("image/"),
@@ -79,6 +93,33 @@ export function TicketDetail({
   async function remove() {
     await deleteTicket(ticket.id);
     router.push("/board");
+  }
+
+  async function handleUpload(files: FileList | null) {
+    if (!files || files.length === 0) return;
+    setUploadError(null);
+    setUploading(true);
+    try {
+      for (const file of Array.from(files)) {
+        if (!file.type.startsWith("image/")) continue;
+        const meta = await uploadAttachment(file);
+        const res = await addAttachment(ticket.id, meta);
+        if (res?.error) throw new Error(res.error);
+      }
+      router.refresh();
+    } catch (e) {
+      setUploadError(e instanceof Error ? e.message : "อัปโหลดรูปไม่สำเร็จ");
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  function removeImage(id: string, path: string) {
+    startTransition(async () => {
+      await removeAttachmentFile(path);
+      await deleteAttachment(id, ticket.id);
+      router.refresh();
+    });
   }
 
   function postComment() {
@@ -183,18 +224,20 @@ export function TicketDetail({
           </div>
 
           {/* attachments */}
-          {images && images.length > 0 && (
-            <div className="mt-6 px-2">
-              <h3 className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-slate-400">
-                <ImageIcon size={13} />
-                รูปแนบ ({images.length})
-              </h3>
-              <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
-                {images.map((a) => (
+          <div className="mt-6 px-2">
+            <h3 className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-slate-400">
+              <ImageIcon size={13} />
+              รูปแนบ {images && images.length > 0 && `(${images.length})`}
+            </h3>
+            <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
+              {images?.map((a) => (
+                <div
+                  key={a.id}
+                  className="group relative aspect-square overflow-hidden rounded-lg border border-border"
+                >
                   <button
-                    key={a.id}
                     onClick={() => setLightbox(publicUrl(a.file_path))}
-                    className="group aspect-square overflow-hidden rounded-lg border border-border"
+                    className="h-full w-full"
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
@@ -203,10 +246,45 @@ export function TicketDetail({
                       className="h-full w-full object-cover transition group-hover:scale-105"
                     />
                   </button>
-                ))}
-              </div>
+                  <button
+                    onClick={() => removeImage(a.id, a.file_path)}
+                    title="ลบรูป"
+                    className="absolute right-1 top-1 rounded-full bg-slate-900/60 p-1 text-white opacity-0 transition hover:bg-red-600 group-hover:opacity-100"
+                  >
+                    <X size={13} />
+                  </button>
+                </div>
+              ))}
+
+              {/* upload tile */}
+              <label
+                className={cn(
+                  "flex aspect-square cursor-pointer flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-border text-slate-400 transition hover:border-violet-400 hover:text-violet-500",
+                  uploading && "pointer-events-none opacity-60",
+                )}
+              >
+                {uploading ? (
+                  <Loader2 size={18} className="animate-spin" />
+                ) : (
+                  <ImagePlus size={18} />
+                )}
+                <span className="text-[10px]">
+                  {uploading ? "กำลังอัป..." : "เพิ่มรูป"}
+                </span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  className="hidden"
+                  disabled={uploading}
+                  onChange={(e) => handleUpload(e.target.files)}
+                />
+              </label>
             </div>
-          )}
+            {uploadError && (
+              <p className="mt-2 text-xs text-red-600">{uploadError}</p>
+            )}
+          </div>
 
           {/* comments */}
           <div className="mt-8 px-2">
@@ -430,6 +508,8 @@ function actionLabel(action: string) {
       return "เปลี่ยนสถานะ";
     case "commented":
       return "แสดงความคิดเห็น";
+    case "attached":
+      return "แนบรูป";
     case "updated":
       return "แก้ไขงาน";
     default:

@@ -218,6 +218,41 @@ export async function deleteTicket(id: string) {
   return { ok: true };
 }
 
+export async function addAttachment(
+  ticketId: string,
+  file: { file_path: string; file_name: string; mime_type: string; size: number },
+) {
+  const { supabase, userId } = await currentUserId();
+  if (!userId) return { error: "unauthorized" };
+
+  const { error } = await supabase
+    .from("attachments")
+    .insert({ ticket_id: ticketId, uploaded_by: userId, ...file });
+  if (error) return { error: error.message };
+
+  await supabase.from("activity").insert({
+    ticket_id: ticketId,
+    actor_id: userId,
+    action: "attached",
+  });
+
+  revalidatePath(`/tickets/${ticketId}`);
+  revalidatePath("/board");
+  return { ok: true };
+}
+
+export async function deleteAttachment(id: string, ticketId: string) {
+  const { supabase, userId } = await currentUserId();
+  if (!userId) return { error: "unauthorized" };
+
+  const { error } = await supabase.from("attachments").delete().eq("id", id);
+  if (error) return { error: error.message };
+
+  revalidatePath(`/tickets/${ticketId}`);
+  revalidatePath("/board");
+  return { ok: true };
+}
+
 export async function addComment(ticketId: string, body: string) {
   const { supabase, userId } = await currentUserId();
   if (!userId) return { error: "unauthorized" };
