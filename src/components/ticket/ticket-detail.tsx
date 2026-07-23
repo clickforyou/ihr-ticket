@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
@@ -59,6 +59,7 @@ export function TicketDetail({
   activity: Activity[];
 }) {
   const router = useRouter();
+  const fileRef = useRef<HTMLInputElement>(null);
   const [, startTransition] = useTransition();
   const [lightbox, setLightbox] = useState<string | null>(null);
   const [title, setTitle] = useState(ticket.title);
@@ -257,7 +258,10 @@ export function TicketDetail({
               ))}
 
               {/* upload tile */}
-              <label
+              <button
+                type="button"
+                onClick={() => fileRef.current?.click()}
+                disabled={uploading}
                 className={cn(
                   "flex aspect-square cursor-pointer flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-border text-slate-400 transition hover:border-violet-400 hover:text-violet-500",
                   uploading && "pointer-events-none opacity-60",
@@ -271,15 +275,19 @@ export function TicketDetail({
                 <span className="text-[10px]">
                   {uploading ? "กำลังอัป..." : "เพิ่มรูป"}
                 </span>
-                <input
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  className="hidden"
-                  disabled={uploading}
-                  onChange={(e) => handleUpload(e.target.files)}
-                />
-              </label>
+              </button>
+              <input
+                ref={fileRef}
+                type="file"
+                accept="image/*"
+                multiple
+                className="hidden"
+                disabled={uploading}
+                onChange={(e) => {
+                  handleUpload(e.target.files);
+                  e.target.value = "";
+                }}
+              />
             </div>
             {uploadError && (
               <p className="mt-2 text-xs text-red-600">{uploadError}</p>

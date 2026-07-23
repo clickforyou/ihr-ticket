@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
@@ -38,6 +38,7 @@ export function NewTicketModal({
   defaultProject?: string | null;
 }) {
   const router = useRouter();
+  const fileRef = useRef<HTMLInputElement>(null);
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [files, setFiles] = useState<File[]>([]);
@@ -250,19 +251,25 @@ export function NewTicketModal({
                 </button>
               </div>
             ))}
-            <label className="flex h-16 w-16 cursor-pointer flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-border text-slate-400 transition hover:border-violet-400 hover:text-violet-500">
+            <button
+              type="button"
+              onClick={() => fileRef.current?.click()}
+              className="flex h-16 w-16 cursor-pointer flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-border text-slate-400 transition hover:border-violet-400 hover:text-violet-500"
+            >
               <ImagePlus size={18} />
               <span className="text-[10px]">เพิ่ม</span>
-              <input
-                type="file"
-                accept="image/*"
-                multiple
-                className="hidden"
-                onChange={(e) =>
-                  setFiles((fs) => [...fs, ...Array.from(e.target.files ?? [])])
-                }
-              />
-            </label>
+            </button>
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/*"
+              multiple
+              className="hidden"
+              onChange={(e) => {
+                setFiles((fs) => [...fs, ...Array.from(e.target.files ?? [])]);
+                e.target.value = "";
+              }}
+            />
           </div>
         </div>
 
