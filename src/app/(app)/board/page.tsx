@@ -14,6 +14,10 @@ export default async function BoardPage(props: {
   const { project: projectFilter } = await props.searchParams;
   const supabase = await createClient();
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   const [projectsRes, membersRes, labelsRes] = await Promise.all([
     supabase
       .from("projects")
@@ -54,6 +58,7 @@ export default async function BoardPage(props: {
       labels={(labelsRes.data as Label[]) ?? []}
       initialTickets={tickets}
       activeProject={projectFilter ?? null}
+      currentUserId={user?.id ?? null}
     />
   );
 }

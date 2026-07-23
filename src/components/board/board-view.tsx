@@ -23,6 +23,8 @@ import {
   LayoutGrid,
   List as ListIcon,
   SlidersHorizontal,
+  User,
+  CalendarClock,
 } from "lucide-react";
 
 const statusAccent: Record<TicketStatus, string> = {
@@ -38,12 +40,14 @@ export function BoardView({
   labels,
   initialTickets,
   activeProject,
+  currentUserId,
 }: {
   projects: Project[];
   members: Profile[];
   labels: Label[];
   initialTickets: Ticket[];
   activeProject: string | null;
+  currentUserId: string | null;
 }) {
   const router = useRouter();
   const [, startTransition] = useTransition();
@@ -52,6 +56,8 @@ export function BoardView({
   const [search, setSearch] = useState("");
   const [priority, setPriority] = useState<string>("");
   const [assignee, setAssignee] = useState<string>("");
+  const [mine, setMine] = useState(false);
+  const [overdue, setOverdue] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [draggedId, setDraggedId] = useState<string | null>(null);
   const [overCol, setOverCol] = useState<TicketStatus | null>(null);
@@ -62,13 +68,17 @@ export function BoardView({
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
+    const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
     return tickets.filter((t) => {
       if (q && !t.title.toLowerCase().includes(q)) return false;
       if (priority && t.priority !== priority) return false;
       if (assignee && t.assignee_id !== assignee) return false;
+      if (mine && t.assignee_id !== currentUserId) return false;
+      if (overdue && !(t.due_date && t.due_date < today && t.status !== "done"))
+        return false;
       return true;
     });
-  }, [tickets, search, priority, assignee]);
+  }, [tickets, search, priority, assignee, mine, overdue, currentUserId]);
 
   const byStatus = (s: TicketStatus) => filtered.filter((t) => t.status === s);
 
@@ -142,8 +152,24 @@ export function BoardView({
       </header>
 
       {/* Filters */}
-      <div className="flex shrink-0 items-center gap-2 border-b border-border bg-surface/60 px-6 py-2.5">
+      <div className="flex shrink-0 flex-wrap items-center gap-2 border-b border-border bg-surface/60 px-6 py-2.5">
         <SlidersHorizontal size={15} className="text-slate-400" />
+        <FilterToggle
+          active={mine}
+          onClick={() => setMine((v) => !v)}
+          icon={User}
+          disabled={!currentUserId}
+        >
+          งานของฉัน
+        </FilterToggle>
+        <FilterToggle
+          active={overdue}
+          onClick={() => setOverdue((v) => !v)}
+          icon={CalendarClock}
+        >
+          เกินกำหนด
+        </FilterToggle>
+        <span className="mx-0.5 h-4 w-px bg-border" />
         <FilterSelect
           value={priority}
           onChange={setPriority}
@@ -159,12 +185,14 @@ export function BoardView({
             label: m.full_name ?? "ผู้ใช้",
           }))}
         />
-        {(priority || assignee || search) && (
+        {(priority || assignee || search || mine || overdue) && (
           <button
             onClick={() => {
               setPriority("");
               setAssignee("");
               setSearch("");
+              setMine(false);
+              setOverdue(false);
             }}
             className="text-xs font-medium text-primary hover:underline"
           >
@@ -285,5 +313,35 @@ function FilterSelect({
         </option>
       ))}
     </select>
+  );
+}
+
+function FilterToggle({
+  active,
+  onClick,
+  icon: Icon,
+  disabled,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  icon: React.ElementType;
+  disabled?: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={cn(
+        "inline-flex h-8 items-center gap-1.5 rounded-lg border px-2.5 text-xs font-medium transition disabled:opacity-40",
+        active
+          ? "border-primary bg-primary-soft text-primary"
+          : "border-border bg-surface text-slate-500 hover:bg-slate-100",
+      )}
+    >
+      <Icon size={14} />
+      {children}
+    </button>
   );
 }
