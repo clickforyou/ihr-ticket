@@ -4,8 +4,9 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
-import { createProject } from "@/app/(app)/board/actions";
+import { createProject, updateProject } from "@/app/(app)/board/actions";
 import { cn } from "@/lib/utils";
+import type { Project } from "@/lib/types";
 import { Loader2, Hash } from "lucide-react";
 
 const COLORS = [
@@ -17,56 +18,56 @@ const fieldCls =
   "w-full rounded-lg border border-border bg-white px-3 py-2 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-ring/40";
 const labelCls = "mb-1.5 block text-xs font-semibold text-slate-600";
 
-/** สร้าง key อัตโนมัติจากชื่อ: เอาอักษร A-Z/0-9 ตัวแรกๆ */
 function suggestKey(name: string) {
-  const ascii = name.toUpperCase().replace(/[^A-Z0-9]/g, "");
-  return ascii.slice(0, 4);
+  return name.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 4);
 }
 
-export function NewProjectModal({
+export function ProjectModal({
   open,
   onClose,
+  project,
 }: {
   open: boolean;
   onClose: () => void;
+  /** ส่ง project เข้ามา = โหมดแก้ไข, ไม่ส่ง = โหมดสร้างใหม่ */
+  project?: Project | null;
 }) {
   const router = useRouter();
+  const isEdit = Boolean(project);
   const [pending, start] = useTransition();
   const [error, setError] = useState<string | null>(null);
-  const [name, setName] = useState("");
-  const [key, setKey] = useState("");
-  const [keyTouched, setKeyTouched] = useState(false);
-  const [description, setDescription] = useState("");
-  const [color, setColor] = useState(COLORS[0]);
+  const [name, setName] = useState(project?.name ?? "");
+  const [key, setKey] = useState(project?.key ?? "");
+  const [keyTouched, setKeyTouched] = useState(isEdit);
+  const [description, setDescription] = useState(project?.description ?? "");
+  const [color, setColor] = useState(project?.color ?? COLORS[0]);
 
   function onName(v: string) {
     setName(v);
     if (!keyTouched) setKey(suggestKey(v));
   }
 
-  function reset() {
-    setName("");
-    setKey("");
-    setKeyTouched(false);
-    setDescription("");
-    setColor(COLORS[0]);
-    setError(null);
-  }
-
   function submit() {
     setError(null);
     start(async () => {
-      const res = await createProject({ name, key, description, color });
+      const payload = { name, key, description, color };
+      const res = isEdit
+        ? await updateProject(project!.id, payload)
+        : await createProject(payload);
       if (res?.error) return setError(res.error);
-      reset();
       onClose();
-      router.push(`/board?project=${res.id}`);
+      if (!isEdit && "id" in res && res.id)
+        router.push(`/board?project=${res.id}`);
       router.refresh();
     });
   }
 
   return (
-    <Modal open={open} onClose={onClose} title="สร้าง Project ใหม่">
+    <Modal
+      open={open}
+      onClose={onClose}
+      title={isEdit ? "แก้ไข Project" : "สร้าง Project ใหม่"}
+    >
       <div className="space-y-4 px-5 py-5">
         <div>
           <label className={labelCls}>ชื่อ Project</label>
@@ -98,7 +99,7 @@ export function NewProjectModal({
             />
           </div>
           <p className="mt-1 text-[11px] text-slate-400">
-            A–Z / 0–9 ยาว 2–10 ตัว ใช้แสดงหน้าการ์ด (ต้องไม่ซ้ำ)
+            A–Z / 0–9 ยาว 2–10 ตัว (ต้องไม่ซ้ำ)
           </p>
         </div>
 
@@ -146,7 +147,7 @@ export function NewProjectModal({
         </Button>
         <Button onClick={submit} disabled={pending || !name.trim()}>
           {pending && <Loader2 size={16} className="animate-spin" />}
-          สร้าง Project
+          {isEdit ? "บันทึก" : "สร้าง Project"}
         </Button>
       </div>
     </Modal>

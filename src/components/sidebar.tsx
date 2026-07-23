@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { usePathname, useSearchParams, useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
 import { Avatar } from "@/components/ui/avatar";
 import { logout } from "@/app/login/actions";
+import { deleteProject } from "@/app/(app)/board/actions";
 import { cn } from "@/lib/utils";
 import type { Profile, Project } from "@/lib/types";
-import { NewProjectModal } from "@/components/new-project-modal";
+import { ProjectModal } from "@/components/project-modal";
 import {
   LayoutDashboard,
   Ticket,
@@ -15,6 +16,9 @@ import {
   ChevronDown,
   Hash,
   Plus,
+  MoreHorizontal,
+  Pencil,
+  Trash2,
 } from "lucide-react";
 
 export function Sidebar({
@@ -26,7 +30,8 @@ export function Sidebar({
 }) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [projectModal, setProjectModal] = useState(false);
+  const [createOpen, setCreateOpen] = useState(false);
+  const [editing, setEditing] = useState<Project | null>(null);
 
   return (
     <aside className="flex w-64 shrink-0 flex-col border-r border-border bg-surface">
@@ -49,7 +54,7 @@ export function Sidebar({
             Projects
           </p>
           <button
-            onClick={() => setProjectModal(true)}
+            onClick={() => setCreateOpen(true)}
             title="เพิ่ม project"
             className="flex h-5 w-5 items-center justify-center rounded-md text-slate-400 transition hover:bg-violet-50 hover:text-primary"
           >
@@ -58,25 +63,11 @@ export function Sidebar({
         </div>
         <div className="space-y-0.5">
           {projects.map((p) => (
-            <Link
-              key={p.id}
-              href={`/board?project=${p.id}`}
-              className="group flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-slate-600 transition hover:bg-slate-100"
-            >
-              <span
-                className="h-2.5 w-2.5 shrink-0 rounded-sm"
-                style={{ backgroundColor: p.color }}
-              />
-              <span className="truncate">{p.name}</span>
-              <span className="ml-auto flex items-center gap-0.5 text-[11px] text-slate-400">
-                <Hash size={11} />
-                {p.key}
-              </span>
-            </Link>
+            <ProjectRow key={p.id} project={p} onEdit={() => setEditing(p)} />
           ))}
           {projects.length === 0 && (
             <button
-              onClick={() => setProjectModal(true)}
+              onClick={() => setCreateOpen(true)}
               className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-primary transition hover:bg-violet-50"
             >
               <Plus size={15} />
@@ -121,11 +112,121 @@ export function Sidebar({
         </button>
       </div>
 
-      <NewProjectModal
-        open={projectModal}
-        onClose={() => setProjectModal(false)}
+      {/* create */}
+      <ProjectModal
+        key="new"
+        open={createOpen}
+        onClose={() => setCreateOpen(false)}
+      />
+      {/* edit (remount per project ด้วย key เพื่อ prefill ค่าใหม่) */}
+      <ProjectModal
+        key={editing?.id ?? "edit"}
+        open={Boolean(editing)}
+        project={editing}
+        onClose={() => setEditing(null)}
       />
     </aside>
+  );
+}
+
+function ProjectRow({
+  project,
+  onEdit,
+}: {
+  project: Project;
+  onEdit: () => void;
+}) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [menu, setMenu] = useState(false);
+  const [pending, start] = useTransition();
+  const active = searchParams.get("project") === project.id;
+
+  function remove() {
+    setMenu(false);
+    if (
+      !confirm(
+        `ลบ project "${project.name}"?\nงาน (ticket) ทั้งหมดใน project นี้จะถูกลบด้วย ย้อนกลับไม่ได้`,
+      )
+    )
+      return;
+    start(async () => {
+      await deleteProject(project.id);
+      if (active) router.push("/board");
+      router.refresh();
+    });
+  }
+
+  return (
+    <div
+      className={cn(
+        "group relative flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition",
+        active ? "bg-violet-50 text-primary" : "text-slate-600 hover:bg-slate-100",
+        pending && "opacity-50",
+      )}
+    >
+      <Link
+        href={`/board?project=${project.id}`}
+        className="flex min-w-0 flex-1 items-center gap-2.5"
+      >
+        <span
+          className="h-2.5 w-2.5 shrink-0 rounded-sm"
+          style={{ backgroundColor: project.color }}
+        />
+        <span className="truncate">{project.name}</span>
+      </Link>
+
+      {/* key (ซ่อนตอน hover เพื่อโชว์ปุ่มเมนู) */}
+      <span className="flex items-center gap-0.5 text-[11px] text-slate-400 group-hover:hidden">
+        <Hash size={11} />
+        {project.key}
+      </span>
+
+      <button
+        onClick={(e) => {
+          e.preventDefault();
+          setMenu((m) => !m);
+        }}
+        className="hidden h-6 w-6 items-center justify-center rounded-md text-slate-400 transition hover:bg-white hover:text-slate-700 group-hover:flex"
+      >
+        <MoreHorizontal size={15} />
+      </button>
+
+      {menu && (
+        <>
+          <div
+            className="fixed inset-0 z-10"
+            onClick={(e) => {
+              e.preventDefault();
+              setMenu(false);
+            }}
+          />
+          <div className="absolute right-2 top-9 z-20 w-32 animate-in overflow-hidden rounded-lg border border-border bg-white py-1 shadow-lg">
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                setMenu(false);
+                onEdit();
+              }}
+              className="flex w-full items-center gap-2 px-3 py-1.5 text-sm text-slate-600 transition hover:bg-slate-100"
+            >
+              <Pencil size={14} />
+              แก้ไข
+            </button>
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                remove();
+              }}
+              className="flex w-full items-center gap-2 px-3 py-1.5 text-sm text-red-600 transition hover:bg-red-50"
+            >
+              <Trash2 size={14} />
+              ลบ
+            </button>
+          </div>
+        </>
+      )}
+    </div>
   );
 }
 

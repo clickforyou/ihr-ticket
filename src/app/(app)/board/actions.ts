@@ -51,6 +51,53 @@ export async function createProject(input: {
   return { id: data.id };
 }
 
+export async function updateProject(
+  id: string,
+  input: { name: string; key: string; description?: string; color: string },
+) {
+  const { supabase, userId } = await currentUserId();
+  if (!userId) return { error: "unauthorized" };
+
+  const name = input.name.trim();
+  const key = input.key.trim().toUpperCase();
+  if (!name) return { error: "กรุณาใส่ชื่อ project" };
+  if (!/^[A-Z0-9]{2,10}$/.test(key))
+    return { error: "รหัส (key) ต้องเป็น A-Z / 0-9 ยาว 2–10 ตัว" };
+
+  const { error } = await supabase
+    .from("projects")
+    .update({
+      name,
+      key,
+      description: input.description?.trim() || null,
+      color: input.color,
+    })
+    .eq("id", id);
+
+  if (error)
+    return {
+      error:
+        error.code === "23505"
+          ? `รหัส "${key}" ถูกใช้แล้ว ลองรหัสอื่น`
+          : error.message,
+    };
+
+  revalidatePath("/", "layout");
+  return { ok: true };
+}
+
+export async function deleteProject(id: string) {
+  const { supabase, userId } = await currentUserId();
+  if (!userId) return { error: "unauthorized" };
+
+  // ลบ project จะ cascade ลบ ticket/label/คอมเมนต์ทั้งหมดของ project นี้
+  const { error } = await supabase.from("projects").delete().eq("id", id);
+  if (error) return { error: error.message };
+
+  revalidatePath("/", "layout");
+  return { ok: true };
+}
+
 export async function createTicket(input: {
   project_id: string;
   title: string;
